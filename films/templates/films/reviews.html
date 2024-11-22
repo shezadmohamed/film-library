@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Reviews</title>
+  </head>
+  <body>
+    <h1>Reviews for {{ film }}</h1>
+    {% if film.review_set.all %}
+      <ul>
+        {% for r in film.review_set.all %}
+        <li>{{ r.review_date }}: {{ r.review_text }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>There are no reviews for {{ film }}</p>
+    {% endif %}
+  </body>
+</html>
