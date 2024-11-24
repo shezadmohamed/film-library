@@ -6,9 +6,9 @@
   </head>
   <body>
     <h1>Reviews for {{ film }}</h1>
-    {% if film.review_set.all %}
+    {% if review_set %}
       <ul>
-        {% for r in film.review_set.all %}
+        {% for r in review_set %}
         <li>{{ r.review_date }}: {{ r.review_text }}</li>
         {% endfor %}
       </ul>
