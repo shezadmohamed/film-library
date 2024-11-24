@@ -8,7 +8,7 @@
     {% if film_list %}
       <ul>
         {% for f in film_list %}
-        <li><a href="{% url 'films:detail' f.title_id %}">{{ f.film_title }}</a></li>
+        <li><a href="{% url 'films:detail' f.slug %}">{{ f.film_title }}</a></li>
         {% endfor %}
       </ul>
     {% else %}

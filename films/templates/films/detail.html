@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1>Submit a review for {{ film }}.</h1>
-    <form action="{% url 'films:detail' film.title_id %}" method="post">
+    <form action="{% url 'films:detail' film.slug %}" method="post">
     {% csrf_token %}
     <fieldset>
       <legend><h2>{{ film.film_title }}</h1></legend>

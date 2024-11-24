@@ -6,16 +6,17 @@ import re
 class Film(models.Model):
     film_title = models.CharField(max_length=200)
     release_year = models.SmallIntegerField()
-    title_id = models.CharField(max_length=200, default="")
+    slug = models.SlugField()
 
     def __str__(self):
         return f'{self.film_title} ({self.release_year})'
 
     def save(self, *args, **kwargs):
-        self.title_id = self._get_text_id()
+        if not self.id:
+            self.slug = self._slugify()
         super(Film, self).save(*args, **kwargs)
 
-    def _get_text_id(self):
+    def _slugify(self):
         return re.sub("[^a-zA-Z0-9]", "", self.film_title).lower() + str(self.release_year)
 
 class Review(models.Model):
