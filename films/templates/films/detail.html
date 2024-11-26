@@ -9,12 +9,20 @@
     <form action="{% url 'films:detail' film.slug %}" method="post">
     {% csrf_token %}
     <fieldset>
-      <legend><h2>{{ film.film_title }}</h1></legend>
+      <legend><h2>{{ film.film_title }}</h2></legend>
       {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        <label for="review_text">Review:</label>
-        <input type="text" id="review_text" name="review_text"><br><br>
-        <label for="review_date">Date:</label>
-        <input type="date" id="review_date" name="review_date"><br><br>
+        <label for="review-text">Review:
+          <textarea id="review-text" name="review-text">
+            {{ review_text }}
+          </textarea>
+        </label>
+        <br><br>
+
+        <label for="review-date">Date:
+          <input type="date" id="review-date" name="review-date" value="{{ review_date }}">
+        </label>
+        <br><br>
+
     </fieldset>
     <input type="submit" value="Post">
     </form>

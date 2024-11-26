@@ -1,19 +1,14 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <title>Reviews</title>
-  </head>
-  <body>
-    <h1>Reviews for {{ film }}</h1>
-    {% if review_set %}
-      <ul>
-        {% for r in review_set %}
-        <li>{{ r.review_date }}: {{ r.review_text }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>There are no reviews for {{ film }}</p>
-    {% endif %}
-  </body>
-</html>
+{% extends "films/base_generic.html" %}
+
+{% block content %}
+  <h1>Reviews for {{ film }}</h1>
+  {% if review_set %}
+    <ul>
+      {% for r in review_set %}
+      <li>{{ r.review_date }}: {{ r.review_text }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no reviews for {{ film }}</p>
+  {% endif %}
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.urls import reverse
 import datetime
 import re
 
@@ -26,6 +27,9 @@ class Review(models.Model):
 
     def __str__(self):
         return f'Review of {self.film} on {self.review_date}: {self.review_text}'
+
+    def get_absolute_url(self):
+        return reverse("reviews", kwargs={"slug": self.film.slug})
 
     def was_published_recently(self):
         return self.review_date >= timezone.localtime().date() - datetime.timedelta(days=30)

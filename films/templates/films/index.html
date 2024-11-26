@@ -1,18 +1,13 @@
-<!doctype html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8" />
-    <title>Films</title>
-  </head>
-  <body>
-    {% if film_list %}
-      <ul>
-        {% for f in film_list %}
-        <li><a href="{% url 'films:detail' f.slug %}">{{ f.film_title }}</a></li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No films available</p>
-    {% endif %}
-  </body>
-</html>
+{% extends "films/base_generic.html" %}
+
+{% block content %}
+  {% if film_list %}
+    <ul>
+      {% for f in film_list %}
+      <li><a href="{% url 'films:detail' f.slug %}">{{ f.film_title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No films available</p>
+  {% endif %}
+{% endblock %}
