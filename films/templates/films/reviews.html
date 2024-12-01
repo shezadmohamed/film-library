@@ -11,4 +11,5 @@
   {% else %}
     <p>There are no reviews for {{ film }}</p>
   {% endif %}
+  <a href = "{% url 'films:detail' film.slug %}">Review {{ film }}.</a>
 {% endblock %}

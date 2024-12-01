@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
+from django.conf import settings
+
 import datetime
 import re
 
@@ -24,6 +26,10 @@ class Review(models.Model):
     film = models.ForeignKey(Film, on_delete=models.CASCADE)
     review_text = models.CharField(max_length=5000)
     review_date = models.DateField()
+    reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, 
+                                 on_delete=models.SET_NULL, 
+                                 null=True, 
+                                 blank=True)
 
     def __str__(self):
         return f'Review of {self.film} on {self.review_date}: {self.review_text}'

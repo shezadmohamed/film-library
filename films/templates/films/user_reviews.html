@@ -1,0 +1,14 @@
+{% extends "films/base_generic.html" %}
+
+{% block content %}
+    <h1>{{ user.get_username }}'s reviews</h1>
+    {% if review_set %}
+        <ul>
+        {% for r in review_set %}
+        <li>{{r.film}}, {{ r.review_date }}: <i>{{ r.review_text }}</i></a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have not written any reviews.</p>
+    {% endif %}
+{% endblock %}

@@ -1,8 +1,11 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # from django.template import loader
 from .models import Film, Review
@@ -41,6 +44,19 @@ class ReviewCreateClass(generic.edit.CreateView):
         context = super().get_context_data(**kwargs)
         context["film"] = self.film
         return context
+    
+
+class ReviewListByUser(LoginRequiredMixin, generic.ListView):
+    template_name = "films/user_reviews.html"
+    context_object_name = "review_set"
+
+    def get_queryset(self) -> QuerySet[Any]:
+        return Review.objects.filter(reviewer=self.request.user).order_by("-review_date")
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        return context
 
 
 def index(request):
@@ -60,7 +76,8 @@ def detail(request, slug):
         if form.is_valid():
             new_review = Review(film=film,
                                 review_text=form.cleaned_data["review_text"],
-                                review_date=form.cleaned_data["review_date"])
+                                review_date=form.cleaned_data["review_date"],
+                                reviewer=request.user)
             new_review.save()
             return HttpResponseRedirect(reverse("films:reviews", args=[slug]))
         else:

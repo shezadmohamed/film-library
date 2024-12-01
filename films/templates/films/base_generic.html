@@ -22,7 +22,7 @@
             <ul class="sidebar-nav">
               <li><a href="{% url 'films:index' %}">Home</a></li>
               {% if user.is_authenticated %}
-                <li>Welcome {{ user.get_username }}</li>
+                <li>User: <a href="{% url 'films:user-reviews' %}">{{ user.get_username }}</a></li>
                 <li>
                   <form id="logout-form" method="post" action="{% url 'layout:logout' %}">
                     {% csrf_token %}
@@ -30,7 +30,7 @@
                   </form>
                 </li>
               {% else %}
-                <li><a href="{% url 'layout:login' %}?next={{ request.path }}">Login</a></li>
+                <li><a href="{% url 'layout:login' %}">Login</a></li>
               {% endif %}
             </ul>
           {% endblock %}

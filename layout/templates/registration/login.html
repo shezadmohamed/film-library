@@ -32,4 +32,10 @@
     <input type="hidden" name="next" value="{{ next }}">
   </form>
 
+  <br>
+{% if next %}
+  <p><a href = "{% url 'layout:signup' %}?next={{ next }}">Sign up</a> instead.</p>
+{% else %}
+  <p><a href = "{% url 'layout:signup' %}">Sign up</a> instead.</p>
+{% endif %}
 {% endblock %}
