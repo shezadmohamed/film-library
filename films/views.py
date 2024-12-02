@@ -64,7 +64,6 @@ class ReviewListByUser(LoginRequiredMixin, generic.ListView):
 
 
 def index(request):
-    print("got here")
     film_list = Film.objects.order_by("-release_year")
     context = {
         "film_list": film_list,
@@ -76,14 +75,22 @@ def index(request):
             search_query = re.sub(" ", "%20", search_query)
             search_results = film_search(search_query)
             context['search_results'] = [
-                (result['title'], f"https://image.tmdb.org/t/p/w185{result['poster_path']}", result['id']) 
+                (result['title'], 
+                 f"https://image.tmdb.org/t/p/w185{result['poster_path']}", 
+                 result['id'],
+                 Film.objects.filter(tmdb_id=result['id']).exists()
+                 ) 
                 for result in search_results
                 ]
         
             return render(request, "films/index.html", context)
-        for i in range(3):
-            if f'add-film{i}' in request.POST:
-                pass
+        else:
+            tmdb_id = list(request.POST.keys())[-1]
+            tmdb_response = tmdb_query_by_id(tmdb_id=tmdb_id)
+            new_film = Film(film_title=tmdb_response['title'],
+                            release_year=tmdb_response['year'],
+                            tmdb_id=tmdb_response['id'])
+            new_film.save()
     return render(request, "films/index.html", context)
 
 
@@ -137,3 +144,15 @@ def film_search(query):
              'poster_path': result['poster_path'],
              'year': result['release_date'][0:4],
              'id': result['id']} for result in search_results]
+
+def tmdb_query_by_id(tmdb_id):
+    url = f"https://api.themoviedb.org/3/movie/{tmdb_id}"
+    headers = {
+        "accept": "application/json",
+        "Authorization": BEARER_KEY
+    }
+    response = requests.get(url, headers=headers).json()
+    return {'title': response['title'],
+             'poster_path': response['poster_path'],
+             'year': response['release_date'][0:4],
+             'id': response['id']}

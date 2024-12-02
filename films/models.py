@@ -9,6 +9,7 @@ import re
 class Film(models.Model):
     film_title = models.CharField(max_length=200)
     release_year = models.SmallIntegerField()
+    tmdb_id = models.IntegerField(null=True, blank=True)
     slug = models.SlugField()
 
     def __str__(self):
