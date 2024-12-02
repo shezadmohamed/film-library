@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.template import loader
 from .models import Film, Review
 from .forms import AddReviewForm
+from .settings import BEARER_KEY
 
 
 class FilmIndexView(generic.ListView):
@@ -105,3 +106,15 @@ def reviews(request, slug):
                   "films/reviews.html",
                   {"film": film, "review_set": film.review_set.all().order_by("-review_date")}
                   )
+
+
+def film_search(query):
+    url = f"https://api.themoviedb.org/3/search/movie?query={query}"
+    headers = {"accept": "application/json",
+               "Authorization": BEARER_KEY
+    }
+    search_results = requests.get(url, headers=headers).json()['results'][0:3]
+    return [{'title': result['title'],
+             'poster_path': result['poster_path'],
+             'year': result['release_date'][0:4],
+             'id': result['id']} for result in search_results]
