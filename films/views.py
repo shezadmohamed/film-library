@@ -7,10 +7,13 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+import requests
+import re
+
 # from django.template import loader
 from .models import Film, Review
 from .forms import AddReviewForm
-from .settings import BEARER_KEY
+from .constants import BEARER_KEY
 
 
 class FilmIndexView(generic.ListView):
@@ -61,10 +64,26 @@ class ReviewListByUser(LoginRequiredMixin, generic.ListView):
 
 
 def index(request):
+    print("got here")
     film_list = Film.objects.order_by("-release_year")
     context = {
         "film_list": film_list,
     }
+    if request.method == 'POST':
+        print(list(request.POST.keys()))
+        if 'submit-search' in request.POST:
+            search_query = request.POST['search-query']
+            search_query = re.sub(" ", "%20", search_query)
+            search_results = film_search(search_query)
+            context['search_results'] = [
+                (result['title'], f"https://image.tmdb.org/t/p/w185{result['poster_path']}", result['id']) 
+                for result in search_results
+                ]
+        
+            return render(request, "films/index.html", context)
+        for i in range(3):
+            if f'add-film{i}' in request.POST:
+                pass
     return render(request, "films/index.html", context)
 
 

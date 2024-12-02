@@ -10,4 +10,31 @@
   {% else %}
     <p>No films available</p>
   {% endif %}
+
+  <form action="{% url 'films:index' %}" method="post">
+    {% csrf_token %}
+    <label for="search-query">Search for a film:</label><br>
+    <input type="text" name="search-query">
+    <input type="submit" value="Search" name="submit-search">
+  </form>
+
+  <br>
+  <br>
+
+  {% if search_results %}
+
+    {% for result_title, result_poster, film_id in search_results %}
+      <div><img src="{{ result_poster }}" width="100"> {{ result_title }}
+        <form action="{% url 'films:index' %}" method="post">
+          {% csrf_token %}
+          <input type="submit" value="Add to database" name="{{ film_id }}">
+        </form>
+      </div>
+      <br>
+    {% endfor %}
+
+  {% else %}
+    <p>There are no search results.</p>
+  {% endif %}
+
 {% endblock %}
