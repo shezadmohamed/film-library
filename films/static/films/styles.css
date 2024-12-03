@@ -18,3 +18,11 @@ body {
     margin-top: 20px;
     margin-right: 100px;
 }
+
+.add-to-db-form {
+  display: inline;
+}
+
+.align-right {
+  float: right;
+}

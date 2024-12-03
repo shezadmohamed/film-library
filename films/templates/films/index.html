@@ -26,12 +26,14 @@
     {% for result_title, result_poster, tmdb_id, film_in_db in search_results %}
       <div><img src="{{ result_poster }}" width="100"> {{ result_title }}
         {% if film_in_db %}
-          In database
+          <div class="align-right">In database</div>
         {% else %}
-          <form action="{% url 'films:index' %}" method="post">
-            {% csrf_token %}
-            <input type="submit" value="Add to database" name="{{ tmdb_id }}">
-          </form>
+          <div class="align-right">
+            <form action="{% url 'films:index' %}" method="post" class="add-to-db-form">
+              {% csrf_token %}
+              <input type="submit" value="Add to database" name="{{ tmdb_id }}">
+            </form>
+          </div>
         {% endif %}
       </div>
       <br>

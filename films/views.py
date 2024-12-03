@@ -1,4 +1,5 @@
 from typing import Any
+
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,7 +11,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 import requests
 import re
 
-# from django.template import loader
 from .models import Film, Review
 from .forms import AddReviewForm
 from .constants import BEARER_KEY
@@ -26,12 +26,12 @@ class ReviewListByFilmView(generic.ListView):
     template_name = "films/reviews.html"
     context_object_name = "review_set"
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Review]:
         self.film = get_object_or_404(Film, slug=self.kwargs["slug"])
         print(self.film)
         return Review.objects.filter(film=self.film).order_by("-review_date")
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         self.film = get_object_or_404(Film, slug=self.kwargs["slug"])
         context = super().get_context_data(**kwargs)
         context["film"] = self.film
@@ -41,9 +41,8 @@ class ReviewListByFilmView(generic.ListView):
 class ReviewCreateClass(generic.edit.CreateView):
     form_class = AddReviewForm
     template_name = "films/add_review.html"
-    # success_url = reverse("films:reviews", args=[self.kwargs["slug"]])
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         self.film = get_object_or_404(Film, slug=self.kwargs["slug"])
         context = super().get_context_data(**kwargs)
         context["film"] = self.film
@@ -54,7 +53,7 @@ class ReviewListByUser(LoginRequiredMixin, generic.ListView):
     template_name = "films/user_reviews.html"
     context_object_name = "review_set"
 
-    def get_queryset(self) -> QuerySet[Any]:
+    def get_queryset(self) -> QuerySet[Review]:
         return Review.objects.filter(reviewer=self.request.user).order_by("-review_date")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -63,7 +62,7 @@ class ReviewListByUser(LoginRequiredMixin, generic.ListView):
         return context
 
 
-def index(request):
+def index(request: HttpResponse) -> HttpResponse:
     film_list = Film.objects.order_by("-release_year")
     context = {
         "film_list": film_list,
@@ -74,14 +73,12 @@ def index(request):
             search_query = request.POST['search-query']
             search_query = re.sub(" ", "%20", search_query)
             search_results = film_search(search_query)
-            context['search_results'] = [
-                (result['title'], 
-                 f"https://image.tmdb.org/t/p/w185{result['poster_path']}", 
-                 result['id'],
-                 Film.objects.filter(tmdb_id=result['id']).exists()
-                 ) 
-                for result in search_results
-                ]
+            context['search_results'] = [(
+                result['title'], 
+                f"https://image.tmdb.org/t/p/w500{result['poster_path']}", 
+                result['id'], 
+                Film.objects.filter(tmdb_id=result['id']).exists()
+            ) for result in search_results]
         
             return render(request, "films/index.html", context)
         else:
@@ -95,7 +92,7 @@ def index(request):
 
 
 @login_required
-def detail(request, slug):
+def detail(request: HttpResponse, slug: str) -> HttpResponse:
     film = get_object_or_404(Film, slug=slug)
 
     if request.method == 'POST':
@@ -126,7 +123,7 @@ def detail(request, slug):
                       )
 
 
-def reviews(request, slug):
+def reviews(request: HttpResponse, slug: str) -> HttpResponse:
     film = get_object_or_404(Film, slug=slug)
     return render(request,
                   "films/reviews.html",
@@ -134,7 +131,14 @@ def reviews(request, slug):
                   )
 
 
-def film_search(query):
+def film_search(query: str) -> list[dict[str, str]]:
+    """
+    Returns a list of three dictionaries each containing information
+    about films returned from TMDB API film search.
+
+    :param query: The search term
+    :returns: A list of three dictionaries containing film information
+    """
     url = f"https://api.themoviedb.org/3/search/movie?query={query}"
     headers = {"accept": "application/json",
                "Authorization": BEARER_KEY
@@ -145,7 +149,16 @@ def film_search(query):
              'year': result['release_date'][0:4],
              'id': result['id']} for result in search_results]
 
-def tmdb_query_by_id(tmdb_id):
+def tmdb_query_by_id(tmdb_id: str) -> dict[str, str]:
+    """
+    Return a dictionary of film information obtained by querying the 
+    TMDB API with a film ID.
+
+    :param tmdb_id: The film ID
+    :returns: A dictionary containing the film's title, poster URL, 
+    release year, and TMDB ID.
+    """
+
     url = f"https://api.themoviedb.org/3/movie/{tmdb_id}"
     headers = {
         "accept": "application/json",

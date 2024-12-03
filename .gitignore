@@ -162,4 +162,4 @@ cython_debug/
 .idea/
 
 
-films/settings.py
+films/constants.py
